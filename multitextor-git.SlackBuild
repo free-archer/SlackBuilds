@@ -1,16 +1,17 @@
 #!/bin/sh
 
-# Slackware build script for latte-dock 
+# Slackware build script for latte-dock
 
 # Copyright 2021 Bespalov Alexey <bespalov.alexey@yandex.ru>
 # All rights reserved.
 
-PRGNAM=latte-dock
-SRCNAM=latte-dock
-VERSION=${VERSION:-0.10.0}
+PRGNAM=multitextor
+SRCNAM=multitextor
+VERSION=${VERSION:-git}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_archer}
-SRC=https://github.com/KDE/$SRCNAM/archive/refs/tags/v$VERSION.tar.gz
+GITSRC=https://github.com/vikonix/multitextor.git
+
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -40,21 +41,20 @@ else
   LIBDIRSUFFIX=""
 fi
 
-set -e
-
+#download
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
 rm -rf $SRCNAM
 
-wget -c $SRC
+echo `pwd`
+echo "git clone $GITSRC"
+git clone $GITSRC
 
-cd $TMP
+cd $SRCNAM
+#VERSION=`git describe`
 
-tar xvf $TMP/v$VERSION.tar.?z*
-
-cd $PRGNAM-$VERSION
-
+#right
 chown -R root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -62,6 +62,7 @@ find -L . \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
 
+#build
 mkdir -p build
 cd build
   cmake \
@@ -73,6 +74,7 @@ cd build
   make install DESTDIR=$PKG
 cd ..
 
+#prepare
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
@@ -84,7 +86,7 @@ fi
 find $PKG -name perllocal.pod -o -name ".packlist" -o -name "*.bs" | xargs rm -f || true
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-   
+
 cp README.md $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
@@ -93,11 +95,22 @@ mkdir -p $PKG/install
 #prepage pkg
 
 echo '           |-----handy-ruler------------------------------------------------------|
-qbittorrent: latte-dock
-qbittorrent:
-
-qbittorrent:
-qbittorrent: ' > $PKG/install/slack-desc
+multitextor: Cross platform console mode text editor.
+multitextor:
+multitextor: Simple user friendly interface same in different environments (with menu and dialog)
+multitextor: Mouse and keyboard cursor movement and selection
+multitextor: Multi-window
+multitextor: Split view mode with 2 panels
+multitextor: Clear working with different text code pages
+multitextor: Different select modes
+multitextor: Working with macros
+multitextor: Big files editing over 4 GBytes (with small memory using)
+multitextor: Deep Undo/Redo
+multitextor: Customizable key commands and some interface parameters
+multitextor: Customizable syntax highlighting
+multitextor: Editor session saving/restoring
+multitextor: Searching in on disk files
+multitextor: ' > $PKG/install/slack-desc
 
 echo 'if [ -x /usr/bin/update-desktop-database ]; then
 	/usr/bin/update-desktop-database -q usr/share/applications >/dev/null 2>&1
